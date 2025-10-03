@@ -1,5 +1,5 @@
-
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
 from .base_page import BasePage
 
 class CartPage(BasePage):
@@ -7,7 +7,7 @@ class CartPage(BasePage):
     TOTAL_PRICE = (By.ID, "totalp")
     PLACE_ORDER = (By.XPATH, "//button[normalize-space()='Place Order']")
 
-    # Place Order modal
+    # Place Order modal...
     PO_NAME = (By.ID, "name")
     PO_COUNTRY = (By.ID, "country")
     PO_CITY = (By.ID, "city")
@@ -19,6 +19,10 @@ class CartPage(BasePage):
 
     def rows(self):
         return self.driver.find_elements(*self.CART_ROWS)
+
+    def wait_for_min_rows(self, n=1):
+        self.wait.until(lambda d: len(d.find_elements(*self.CART_ROWS)) >= n)
+        return self
 
     def total(self):
         t = self.text_of(self.TOTAL_PRICE)
@@ -36,10 +40,8 @@ class CartPage(BasePage):
         self.type(self.PO_MONTH, month)
         self.type(self.PO_YEAR, year)
         self.click(self.PO_PURCHASE)
-        # Confirmation dialog (SweetAlert), extract order id
         from selenium.webdriver.common.by import By
         conf = self.text_of((By.CSS_SELECTOR, ".sweet-alert.showSweetAlert.visible p"))
-        # conf example: "Id: 12345\nAmount: 790 USD\nCard Number: 4111...\nName: QA Tester\nDate: ..."
         import re
         m = re.search(r"Id:\s*(\d+)", conf)
         order_id = m.group(1) if m else None

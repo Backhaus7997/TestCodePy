@@ -1,5 +1,7 @@
-
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException
+import time
 from .base_page import BasePage
 
 class ProductPage(BasePage):
@@ -8,8 +10,24 @@ class ProductPage(BasePage):
     PRICE = (By.CSS_SELECTOR, ".price-container")
 
     def add_to_cart(self):
-        self.click(self.ADD_TO_CART)
+        
+        self.present(self.PRODUCT_NAME)
+
+        
+        btn = self.wait.until(EC.element_to_be_clickable(self.ADD_TO_CART))
+        self.driver.execute_script("arguments[0].scrollIntoView({block:'center'});", btn)
+        self.driver.execute_script("arguments[0].click();", btn)
+
+        
+        try:
+            self.wait.until(EC.alert_is_present())
+        except TimeoutException:
+            time.sleep(0.7)
+            self.driver.execute_script("arguments[0].click();", btn)
+            self.wait.until(EC.alert_is_present())
+
         alert = self.driver.switch_to.alert
+        _ = alert.text
         alert.accept()
         return self
 
@@ -17,7 +35,6 @@ class ProductPage(BasePage):
         return self.text_of(self.PRODUCT_NAME)
 
     def product_price_value(self):
-        # Ejemplo de texto: "Price: $360 *includes tax"
         raw = self.text_of(self.PRICE)
         import re
         m = re.search(r"\$(\d+)", raw)
