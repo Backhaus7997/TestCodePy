@@ -1,77 +1,108 @@
 
 # Demoblaze E2E Automation (Pytest + Selenium)
 
-Automatización de flujos core en [demoblaze.com](https://www.demoblaze.com/): Login, navegación, agregado al carrito, verificación de totales y checkout (Place Order).  
-Diseño con **Page Object Model**, ejecución en **Chrome** y **Firefox**, reporte **pytest-html**, y **GitHub Actions** con matriz de navegadores.
+Automated end-to-end tests for [**demoblaze.com**](https://www.demoblaze.com/) covering:  
+- Signup & Login  
+- Product navigation  
+- Add to Cart  
+- Cart totals validation  
+- Checkout (*Place Order*)  
 
-> Este repo adapta los requerimientos típicos del code challenge (POM, Selenium, PyTest, reporte y CI/CD). fileciteturn0file0
+Built with the **Page Object Model (POM)** pattern, runs on **Chrome** and **Firefox**, generates **pytest-html** reports, and integrates with **GitHub Actions** using a browser matrix.
 
-## Requisitos
-- Python 3.10+
-- Navegadores: Chrome y/o Firefox
-- (Opcional) Headless por default
+---
 
-## Instalación
+## Requirements
+- Python **3.10+**
+- Browsers: **Chrome** and/or **Firefox**
+- Headless mode supported (default)
+
+---
+
+## Installation
+
 ```bash
+# Create and activate virtual environment
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+source .venv/bin/activate      # On Linux / Mac
+.venv\Scripts\Activate.ps1     # On Windows PowerShell
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-## Ejecutar pruebas
+---
+
+## Running Tests
+
 ```bash
-# Chrome headless (default)
+# Chrome (headless by default)
 pytest -v --html=report.html --self-contained-html
 
 # Firefox
 pytest -v --browser firefox --html=report.html --self-contained-html
 
-# UI visible
+# Run with browser UI (headed)
 pytest -v --headed
 ```
 
-Puedes combinar flags, por ejemplo:
+Flags can be combined, for example:
+
 ```bash
 pytest -v --browser firefox --headed --html=report.html --self-contained-html
 ```
 
-## Variables útiles
-- `--base-url` para apuntar a otro entorno (default: https://www.demoblaze.com/)
-- `--wait` segundos de espera explícita (default: 10)
+---
 
-## Estructura
+## Useful CLI Options
+
+| Option        | Default | Description                                |
+|---------------|---------|--------------------------------------------|
+| `--base-url`  | https://www.demoblaze.com/ | Target environment base URL |
+| `--wait`      | 10      | Explicit wait timeout (in seconds)         |
+| `--browser`   | chrome  | Browser: `chrome` or `firefox`             |
+| `--headed`    | *off*   | Show browser UI instead of headless mode   |
+
+---
+
+## Project Structure
+
 ```
 demoblaze-automation/
-├─ pages/
+├─ pages/              # Page Object Model classes
 │  ├─ base_page.py
 │  ├─ home_page.py
 │  ├─ auth_modals.py
 │  ├─ product_page.py
 │  └─ cart_page.py
-├─ tests/
+├─ tests/              # Test cases
 │  ├─ test_01_login.py
 │  ├─ test_02_add_to_cart.py
 │  ├─ test_03_cart_totals.py
 │  └─ test_04_checkout.py
-├─ utils/
+├─ utils/              # Helpers
 │  └─ data.py
-├─ conftest.py
+├─ conftest.py         # Pytest fixtures & setup
 ├─ pytest.ini
 ├─ requirements.txt
 └─ .github/workflows/ci.yml
 ```
 
-## CI en GitHub Actions
-- Matriz de **chrome** y **firefox**
-- Genera `report.html` como artefacto
+---
 
-## Nota sobre credenciales
-Demoblaze permite **Signup** y **Login** por modales. En las pruebas se genera un usuario único con timestamp para asegurar independencia entre corridas.
+## CI/CD with GitHub Actions
+- Runs in a **matrix** of `chrome` and `firefox`
+- Generates `report.html` and uploads it as an artifact
 
 ---
 
-## AI usage (breve)
-- Generación inicial del boilerplate y estructura POM
-- Búsqueda de selectores basada en conocimiento del sitio (sin navegación asistida en este entorno)
-- Decisiones manuales en esperas y desacople de fixtures
+## Credentials Note
+- Demoblaze provides **Signup** and **Login** via modals.  
+- Tests generate **unique users** (with timestamps) to avoid conflicts across runs.
 
+---
+
+## AI Usage (disclosure)
+- Generated boilerplate and Page Object Model structure  
+- Selectors chosen based on site knowledge  
+- Waits and fixtures tuned manually  
